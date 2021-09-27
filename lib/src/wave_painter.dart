@@ -1,16 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:wave_slider/src/wave_slider.dart';
 
 class WavePainter extends CustomPainter {
   WavePainter({
     required this.sliderPosition,
     required this.dragPercentage,
-    required this.animationProgress,
-    required this.sliderState,
     required this.color,
-    this.displayTrackball = false,
   })  : wavePainter = Paint()
           ..color = color
           ..style = PaintingStyle.stroke
@@ -21,11 +17,6 @@ class WavePainter extends CustomPainter {
 
   final double sliderPosition;
   final double dragPercentage;
-  final double animationProgress;
-
-  final SliderState sliderState;
-
-  final bool displayTrackball;
 
   final Color color;
 
@@ -44,25 +35,9 @@ class WavePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final Size restrictedSize = Size(size.width - anchorRadius, size.height);
     _paintAnchors(canvas, restrictedSize);
-    minWaveHeight = restrictedSize.height * 0.2;
-    maxWaveHeight = restrictedSize.height * 0.8;
-    switch (sliderState) {
-      case SliderState.starting:
-        _paintStartupWave(canvas, restrictedSize);
-        break;
-      case SliderState.resting:
-        _paintRestingWave(canvas, restrictedSize);
-        break;
-      case SliderState.sliding:
-        _paintSlidingWave(canvas, restrictedSize);
-        break;
-      case SliderState.stopping:
-        _paintStoppingWave(canvas, restrictedSize);
-        break;
-      default:
-        _paintSlidingWave(canvas, restrictedSize);
-        break;
-    }
+    minWaveHeight = restrictedSize.height * 0.5;
+    maxWaveHeight = restrictedSize.height * 0.5;
+    _paintSlidingWave(canvas, restrictedSize);
   }
 
   void _paintAnchors(Canvas canvas, Size size) {
@@ -72,48 +47,9 @@ class WavePainter extends CustomPainter {
         Offset(size.width, size.height), anchorRadius, fillPainter);
   }
 
-  void _paintRestingWave(Canvas canvas, Size size) {
-    final Path path = Path();
-    path.moveTo(anchorRadius, size.height);
-    path.lineTo(size.width, size.height);
-    canvas.drawPath(path, wavePainter);
-    if (displayTrackball) {
-      _paintTrackball(canvas, size);
-    }
-  }
-
-  void _paintStartupWave(Canvas canvas, Size size) {
-    final WaveCurveDefinitions line = _calculateWaveLineDefinitions(size);
-
-    final double? waveHeight = lerpDouble(size.height, line.controlHeight,
-        Curves.elasticOut.transform(animationProgress));
-    line.controlHeight = waveHeight;
-    _paintWaveLine(canvas, size, line);
-    if (displayTrackball) {
-      _paintTrackball(canvas, size, waveCurve: line);
-    }
-  }
-
   void _paintSlidingWave(Canvas canvas, Size size) {
     final WaveCurveDefinitions line = _calculateWaveLineDefinitions(size);
     _paintWaveLine(canvas, size, line);
-    if (displayTrackball) {
-      _paintTrackball(canvas, size, waveCurve: line);
-    }
-  }
-
-  void _paintStoppingWave(Canvas canvas, Size size) {
-    final WaveCurveDefinitions line = _calculateWaveLineDefinitions(size);
-
-    final double? waveHeight = lerpDouble(line.controlHeight, size.height,
-        Curves.elasticOut.transform(animationProgress));
-
-    line.controlHeight = waveHeight;
-
-    _paintWaveLine(canvas, size, line);
-    if (displayTrackball) {
-      _paintTrackball(canvas, size, waveCurve: line);
-    }
   }
 
   void _paintWaveLine(
@@ -140,27 +76,11 @@ class WavePainter extends CustomPainter {
     canvas.drawPath(path, wavePainter);
   }
 
-  void _paintTrackball(Canvas canvas, Size size,
-      {WaveCurveDefinitions? waveCurve}) {
-    double? indicatorSize = minWaveHeight;
-    double? centerPoint = sliderPosition, controlHeight = size.height;
-    centerPoint = (centerPoint > size.width) ? size.width : centerPoint;
-    if (waveCurve != null) {
-      centerPoint = waveCurve.centerPoint;
-      controlHeight = waveCurve.controlHeight;
-
-      indicatorSize = (size.height - controlHeight!) / 2.5;
-      if (indicatorSize < minWaveHeight!) {
-        indicatorSize = minWaveHeight;
-      }
-    }
-    canvas.drawCircle(Offset(centerPoint, controlHeight + indicatorSize! * 1.5),
-        indicatorSize, fillPainter);
-  }
-
   WaveCurveDefinitions _calculateWaveLineDefinitions(Size size) {
-    final double controlHeight =
-        (size.height - minWaveHeight!) - (maxWaveHeight * dragPercentage);
+    // final double controlHeight =
+    //     (size.height - minWaveHeight!) - (maxWaveHeight * dragPercentage);
+
+    final double controlHeight = size.height - minWaveHeight! - maxWaveHeight;
 
     final double bendWidth = 20 + 20 * dragPercentage;
     final double bezierWidth = 20 + 20 * dragPercentage;

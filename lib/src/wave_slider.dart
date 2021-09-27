@@ -8,12 +8,13 @@ class WaveSlider extends StatefulWidget {
   const WaveSlider({
     this.sliderHeight = 50.0,
     this.color = Colors.black,
+    this.initialPosition = 0.5,
     this.onChangeEnd,
     this.onChangeStart,
     required this.onChanged,
-    this.displayTrackball = false,
-  })  :
-        assert(sliderHeight >= 50 && sliderHeight <= 600);
+  }) : assert(sliderHeight >= 50 && sliderHeight <= 600);
+
+  final double initialPosition;
 
   /// The height of the slider can be set by specifying a [sliderHeight] - default is 50.0
   final double sliderHeight;
@@ -33,9 +34,6 @@ class WaveSlider extends StatefulWidget {
   /// Called when the user is done selecting a new value for the slider.
   final ValueChanged<double>? onChangeEnd;
 
-  /// Display a trackball below the line on the current position as a visual indicator
-  final bool displayTrackball;
-
   @override
   _WaveSliderState createState() => _WaveSliderState();
 }
@@ -46,19 +44,9 @@ class _WaveSliderState extends State<WaveSlider>
   double _dragPercentage = 0.0;
   double _sliderWidth = 0;
 
-  late WaveSliderController _slideController;
-
   @override
   void initState() {
     super.initState();
-    _slideController = WaveSliderController(vsync: this)
-      ..addListener(() => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    _slideController.dispose();
-    super.dispose();
   }
 
   void _handleChanged(double val) {
@@ -96,7 +84,6 @@ class _WaveSliderState extends State<WaveSlider>
   void _onDragStart(BuildContext context, DragStartDetails start) {
     final RenderBox box = context.findRenderObject() as RenderBox;
     final Offset localOffset = box.globalToLocal(start.globalPosition);
-    _slideController.setStateToStart();
     _updateDragPosition(localOffset);
     _handleChangeStart(_dragPercentage);
   }
@@ -104,15 +91,19 @@ class _WaveSliderState extends State<WaveSlider>
   void _onDragUpdate(BuildContext context, DragUpdateDetails update) {
     final RenderBox box = context.findRenderObject() as RenderBox;
     final Offset localOffset = box.globalToLocal(update.globalPosition);
-    _slideController.setStateToSliding();
     _updateDragPosition(localOffset);
     _handleChanged(_dragPercentage);
   }
 
   void _onDragEnd(BuildContext context, DragEndDetails end) {
-    _slideController.setStateToStopping();
     setState(() {});
     _handleChangeEnd(_dragPercentage);
+  }
+
+  double _getPosition(double dragPercentage) {
+    var ff = (_dragPercentage - 0.5) * 2;
+    print('ff : $ff');
+    return ff;
   }
 
   @override
@@ -126,21 +117,33 @@ class _WaveSliderState extends State<WaveSlider>
             left: 8.0,
             right: 8.0,
             top: _safePadding,
-            bottom: widget.displayTrackball ? _safePadding * 2 : _safePadding,
+            bottom: _safePadding,
           ),
           child: GestureDetector(
             child: Container(
               width: _sliderWidth,
-              height: widget.sliderHeight,
-              child: CustomPaint(
-                painter: WavePainter(
-                  color: widget.color,
-                  sliderPosition: _dragPosition,
-                  dragPercentage: _dragPercentage,
-                  sliderState: _slideController.state,
-                  animationProgress: _slideController.progress,
-                  displayTrackball: widget.displayTrackball,
-                ),
+              height: widget.sliderHeight + 40,
+              child: Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: widget.sliderHeight,
+                    child: CustomPaint(
+                      painter: WavePainter(
+                        color: widget.color,
+                        sliderPosition: _dragPosition,
+                        dragPercentage: _dragPercentage,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment(_getPosition(_dragPercentage), 0),
+                    child: const CircleAvatar(
+                      backgroundColor: Colors.teal,
+                      radius: 20,
+                    ),
+                  ),
+                ],
               ),
             ),
             onHorizontalDragStart: (DragStartDetails start) =>
@@ -154,73 +157,4 @@ class _WaveSliderState extends State<WaveSlider>
       },
     );
   }
-}
-
-class WaveSliderController extends ChangeNotifier {
-  WaveSliderController({required TickerProvider vsync})
-      : controller = AnimationController(vsync: vsync) {
-    controller
-      ..addListener(_onProgressUpdate)
-      ..addStatusListener(_onStatusUpdate);
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  final AnimationController controller;
-  SliderState _state = SliderState.resting;
-
-  void _onProgressUpdate() {
-    notifyListeners();
-  }
-
-  void _onStatusUpdate(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
-      _onTransitionCompleted();
-    }
-  }
-
-  void _onTransitionCompleted() {
-    if (_state == SliderState.stopping) {
-      setStateToResting();
-    }
-  }
-
-  double get progress => controller.value;
-
-  SliderState get state => _state;
-
-  void _startAnimation() {
-    controller.duration = const Duration(milliseconds: 500);
-    controller.forward(from: 0.0);
-    notifyListeners();
-  }
-
-  void setStateToStart() {
-    _startAnimation();
-    _state = SliderState.starting;
-  }
-
-  void setStateToStopping() {
-    _startAnimation();
-    _state = SliderState.stopping;
-  }
-
-  void setStateToSliding() {
-    _state = SliderState.sliding;
-  }
-
-  void setStateToResting() {
-    _state = SliderState.resting;
-  }
-}
-
-enum SliderState {
-  starting,
-  resting,
-  sliding,
-  stopping,
 }

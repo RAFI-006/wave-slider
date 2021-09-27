@@ -20,7 +20,7 @@ class _AppState extends State<App> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           WaveSlider(
-            displayTrackball: false,
+            initialPosition: 0.5,
             onChanged: (double dragUpdate) {
               setState(() {
                 _dragPercentage = dragUpdate *
