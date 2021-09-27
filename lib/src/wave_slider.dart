@@ -43,6 +43,7 @@ class _WaveSliderState extends State<WaveSlider>
   double _dragPosition = 0.0;
   double _dragPercentage = 0.0;
   double _sliderWidth = 0;
+  double _temp = 0.0;
 
   @override
   void initState() {
@@ -78,6 +79,7 @@ class _WaveSliderState extends State<WaveSlider>
     setState(() {
       _dragPosition = newDragPosition;
       _dragPercentage = _dragPosition / _sliderWidth;
+      _temp = (_dragPercentage - 0.5) * 2;
     });
   }
 
@@ -98,12 +100,6 @@ class _WaveSliderState extends State<WaveSlider>
   void _onDragEnd(BuildContext context, DragEndDetails end) {
     setState(() {});
     _handleChangeEnd(_dragPercentage);
-  }
-
-  double _getPosition(double dragPercentage) {
-    var ff = (_dragPercentage - 0.5) * 2;
-    print('ff : $ff');
-    return ff;
   }
 
   @override
@@ -137,7 +133,7 @@ class _WaveSliderState extends State<WaveSlider>
                     ),
                   ),
                   Align(
-                    alignment: Alignment(_getPosition(_dragPercentage), 0),
+                    alignment: Alignment(_temp, 0),
                     child: const CircleAvatar(
                       backgroundColor: Colors.teal,
                       radius: 20,

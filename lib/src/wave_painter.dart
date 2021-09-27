@@ -7,21 +7,24 @@ class WavePainter extends CustomPainter {
     required this.sliderPosition,
     required this.dragPercentage,
     required this.color,
-  })  : wavePainter = Paint()
-          ..color = color
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.5,
-        fillPainter = Paint()
-          ..color = color
-          ..style = PaintingStyle.fill;
+  }) {
+    wavePainter = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5;
+
+    fillPainter = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+  }
 
   final double sliderPosition;
   final double dragPercentage;
 
   final Color color;
 
-  final Paint wavePainter;
-  final Paint fillPainter;
+  late Paint wavePainter;
+  late Paint fillPainter;
 
   /// Previous slider position initialised at the [anchorRadius], which is the start
   double _previousSliderPosition = anchorRadius;
