@@ -6,31 +6,45 @@ class WavePainter extends CustomPainter {
   WavePainter({
     required this.sliderPosition,
     required this.dragPercentage,
-    required this.color,
+    this.color = Colors.black,
+    this.activeColor = Colors.black,
+    this.waveGradientColorList,
+    this.waveStrokeWidth = 3.0,
   }) {
     wavePainter = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0;
+      ..strokeWidth = waveStrokeWidth;
+
+    trackballPainter = Paint()
+      ..color = activeColor
+      ..style = PaintingStyle.fill;
+
+    if (waveGradientColorList == null || waveGradientColorList!.isEmpty) {
+      waveGradientColorList = <Color>[
+        Colors.black,
+        Colors.teal,
+        Colors.black,
+      ];
+    }
 
     wavePainterGradient = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0;
-
-    fillPainter = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
+      ..strokeWidth = waveStrokeWidth;
   }
 
   final double sliderPosition;
   final double dragPercentage;
 
   final Color color;
+  final Color activeColor;
+  late List<Color>? waveGradientColorList;
 
   late Paint wavePainter;
-  late Paint fillPainter;
+  late Paint trackballPainter;
   late Paint wavePainterGradient;
+  final double waveStrokeWidth;
 
   /// Previous slider position initialised at the [anchorRadius], which is the start
   double _previousSliderPosition = anchorRadius;
@@ -47,12 +61,12 @@ class WavePainter extends CustomPainter {
     _paintSlidingWave(canvas, restrictedSize);
   }
 
-  void _paintAnchors(Canvas canvas, Size size) {
-    canvas.drawCircle(
-        Offset(anchorRadius, size.height), anchorRadius, fillPainter);
-    canvas.drawCircle(
-        Offset(size.width, size.height), anchorRadius, fillPainter);
-  }
+  // void _paintAnchors(Canvas canvas, Size size) {
+  //   canvas.drawCircle(
+  //       Offset(anchorRadius, size.height), anchorRadius, fillPainter);
+  //   canvas.drawCircle(
+  //       Offset(size.width, size.height), anchorRadius, fillPainter);
+  // }
 
   void _paintSlidingWave(Canvas canvas, Size size) {
     final Size _size = Size(size.width, size.height * 0.5);
@@ -87,14 +101,10 @@ class WavePainter extends CustomPainter {
         waveCurve.endOfBezier,
         size.height);
 
-    wavePainterGradient.shader = const LinearGradient(
+    wavePainterGradient.shader = LinearGradient(
       begin: Alignment.centerLeft,
       end: Alignment.centerRight,
-      colors: <Color>[
-        Colors.black,
-        Colors.teal,
-        Colors.black,
-      ],
+      colors: waveGradientColorList!,
     ).createShader(
       Rect.fromPoints(
         Offset(waveCurve.startOfBezier, size.height),
@@ -121,7 +131,7 @@ class WavePainter extends CustomPainter {
     canvas.drawCircle(
       Offset(centerPoint, indicatorSize * 1.5),
       indicatorSize,
-      fillPainter,
+      trackballPainter,
     );
   }
 

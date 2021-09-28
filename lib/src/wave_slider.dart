@@ -6,18 +6,20 @@ class WaveSlider extends StatefulWidget {
   ///
   /// When the state of the slider is changed the widget calls the [onChanged] callback.
   const WaveSlider({
-    this.sliderHeight = 50.0,
     this.color = Colors.black,
+    this.activeColor = Colors.black,
     this.initialPosition = 0.5,
     this.onChangeEnd,
     this.onChangeStart,
     required this.onChanged,
+    this.waveGradientColorList,
+    this.waveStrokeWidth = 3.0,
   });
 
   final double initialPosition;
-
-  /// The height of the slider can be set by specifying a [sliderHeight] - default is 50.0
-  final double sliderHeight;
+  final List<Color>? waveGradientColorList;
+  final double waveStrokeWidth;
+  final Color activeColor;
 
   /// The color of the slider can be set by specifying a [color] - default is black.
   final Color color;
@@ -48,6 +50,7 @@ class _WaveSliderState extends State<WaveSlider>
   @override
   void initState() {
     super.initState();
+    _dragPercentage = widget.initialPosition;
   }
 
   void _handleChanged(double val) {
@@ -113,12 +116,14 @@ class _WaveSliderState extends State<WaveSlider>
           child: Container(
             width: _sliderWidth,
             height: _sliderHeight,
-            color: Colors.red,
             child: CustomPaint(
               painter: WavePainter(
                 color: widget.color,
-                sliderPosition: _dragPosition,
+                sliderPosition: _sliderWidth * _dragPercentage,
                 dragPercentage: _dragPercentage,
+                waveGradientColorList: widget.waveGradientColorList,
+                waveStrokeWidth: widget.waveStrokeWidth,
+                activeColor: widget.activeColor,
               ),
             ),
           ),
