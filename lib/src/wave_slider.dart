@@ -12,7 +12,7 @@ class WaveSlider extends StatefulWidget {
     this.onChangeEnd,
     this.onChangeStart,
     required this.onChanged,
-  }) : assert(sliderHeight >= 50 && sliderHeight <= 600);
+  });
 
   final double initialPosition;
 
@@ -43,6 +43,7 @@ class _WaveSliderState extends State<WaveSlider>
   double _dragPosition = 0.0;
   double _dragPercentage = 0.0;
   double _sliderWidth = 0;
+  double _sliderHeight = 0;
 
   @override
   void initState() {
@@ -107,10 +108,11 @@ class _WaveSliderState extends State<WaveSlider>
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         _sliderWidth = constraints.maxWidth;
+        _sliderHeight = constraints.maxHeight;
         return GestureDetector(
           child: Container(
             width: _sliderWidth,
-            height: widget.sliderHeight,
+            height: _sliderHeight,
             color: Colors.red,
             child: CustomPaint(
               painter: WavePainter(
