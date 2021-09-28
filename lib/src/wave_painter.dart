@@ -57,6 +57,7 @@ class WavePainter extends CustomPainter {
   void _paintSlidingWave(Canvas canvas, Size size) {
     final WaveCurveDefinitions line = _calculateWaveLineDefinitions(size);
     _paintWaveLine(canvas, size, line);
+    _paintTrackball(canvas, size, waveCurve: line);
   }
 
   void _paintWaveLine(
@@ -105,6 +106,24 @@ class WavePainter extends CustomPainter {
     endPath.moveTo(waveCurve.endOfBezier, size.height);
     endPath.lineTo(size.width, size.height);
     canvas.drawPath(endPath, wavePainter);
+  }
+
+  void _paintTrackball(Canvas canvas, Size size,
+      {WaveCurveDefinitions? waveCurve}) {
+    double? indicatorSize = minWaveHeight;
+    double? centerPoint = sliderPosition, controlHeight = size.height;
+    centerPoint = (centerPoint > size.width) ? size.width : centerPoint;
+    if (waveCurve != null) {
+      centerPoint = waveCurve.centerPoint;
+      controlHeight = waveCurve.controlHeight;
+
+      indicatorSize = (size.height - controlHeight!) / 2.5;
+      if (indicatorSize < minWaveHeight!) {
+        indicatorSize = minWaveHeight;
+      }
+    }
+    canvas.drawCircle(Offset(centerPoint, controlHeight + indicatorSize! * 1.5),
+        indicatorSize * 0.8, fillPainter);
   }
 
   WaveCurveDefinitions _calculateWaveLineDefinitions(Size size) {

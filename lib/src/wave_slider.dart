@@ -43,7 +43,6 @@ class _WaveSliderState extends State<WaveSlider>
   double _dragPosition = 0.0;
   double _dragPercentage = 0.0;
   double _sliderWidth = 0;
-  double _temp = 0.0;
 
   @override
   void initState() {
@@ -58,9 +57,11 @@ class _WaveSliderState extends State<WaveSlider>
     if (widget.onChangeStart != null) {
       widget.onChangeStart!(val);
     }
+    widget.onChanged(val);
   }
 
   void _handleChangeEnd(double val) {
+    widget.onChanged(val);
     if (widget.onChangeEnd != null) {
       widget.onChangeEnd!(val);
     }
@@ -79,8 +80,6 @@ class _WaveSliderState extends State<WaveSlider>
     setState(() {
       _dragPosition = newDragPosition;
       _dragPercentage = _dragPosition / _sliderWidth;
-      _temp = (_dragPercentage - 0.5) * 2;
-      print('temp val : $_temp');
     });
   }
 
@@ -108,52 +107,24 @@ class _WaveSliderState extends State<WaveSlider>
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         _sliderWidth = constraints.maxWidth;
-        final double _safePadding = widget.sliderHeight / 4;
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 8.0,
-            right: 8.0,
-            top: _safePadding,
-            bottom: _safePadding,
-          ),
-          child: GestureDetector(
-            child: Container(
-              width: _sliderWidth,
-              height: widget.sliderHeight + 40,
-              child: Stack(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: widget.sliderHeight,
-                    child: LayoutBuilder(
-                      builder: (context, boxCon) {
-                        return CustomPaint(
-                          painter: WavePainter(
-                            color: widget.color,
-                            sliderPosition: boxCon.maxWidth * _dragPercentage,
-                            dragPercentage: _dragPercentage,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment(_temp, 0),
-                    child: const CircleAvatar(
-                      backgroundColor: Colors.teal,
-                      radius: 10,
-                    ),
-                  ),
-                ],
+        return GestureDetector(
+          child: Container(
+            width: _sliderWidth,
+            height: widget.sliderHeight,
+            color: Colors.red,
+            child: CustomPaint(
+              painter: WavePainter(
+                color: widget.color,
+                sliderPosition: _dragPosition,
+                dragPercentage: _dragPercentage,
               ),
             ),
-            onHorizontalDragStart: (DragStartDetails start) =>
-                _onDragStart(context, start),
-            onHorizontalDragUpdate: (DragUpdateDetails update) =>
-                _onDragUpdate(context, update),
-            onHorizontalDragEnd: (DragEndDetails end) =>
-                _onDragEnd(context, end),
           ),
+          onHorizontalDragStart: (DragStartDetails start) =>
+              _onDragStart(context, start),
+          onHorizontalDragUpdate: (DragUpdateDetails update) =>
+              _onDragUpdate(context, update),
+          onHorizontalDragEnd: (DragEndDetails end) => _onDragEnd(context, end),
         );
       },
     );

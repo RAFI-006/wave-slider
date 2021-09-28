@@ -20,14 +20,18 @@ class _AppState extends State<App> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          WaveSlider(
-            initialPosition: 0.5,
-            onChanged: (double dragUpdate) {
-              setState(() {
-                _dragPercentage = dragUpdate *
-                    100; // dragUpdate is a fractional value between 0 and 1
-              });
-            },
+          Container(
+            width: 300,
+            height: 60,
+            child: WaveSlider(
+              initialPosition: 0.5,
+              onChanged: (double dragUpdate) {
+                setState(() {
+                  _dragPercentage = dragUpdate *
+                      100; // dragUpdate is a fractional value between 0 and 1
+                });
+              },
+            ),
           ),
           const Padding(
             padding: EdgeInsets.all(8.0),
