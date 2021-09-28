@@ -11,7 +11,12 @@ class WavePainter extends CustomPainter {
     wavePainter = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.5;
+      ..strokeWidth = 3.0;
+
+    wavePainterGradient = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.0;
 
     fillPainter = Paint()
       ..color = color
@@ -25,6 +30,7 @@ class WavePainter extends CustomPainter {
 
   late Paint wavePainter;
   late Paint fillPainter;
+  late Paint wavePainterGradient;
 
   /// Previous slider position initialised at the [anchorRadius], which is the start
   double _previousSliderPosition = anchorRadius;
@@ -32,14 +38,12 @@ class WavePainter extends CustomPainter {
   static const double anchorRadius = 5;
 
   double? minWaveHeight;
-  late double maxWaveHeight;
 
   @override
   void paint(Canvas canvas, Size size) {
     final Size restrictedSize = Size(size.width - anchorRadius, size.height);
-    _paintAnchors(canvas, restrictedSize);
+    //_paintAnchors(canvas, restrictedSize);
     minWaveHeight = restrictedSize.height * 0.5;
-    maxWaveHeight = restrictedSize.height * 0.5;
     _paintSlidingWave(canvas, restrictedSize);
   }
 
@@ -60,40 +64,61 @@ class WavePainter extends CustomPainter {
     final Path path = Path();
     path.moveTo(anchorRadius, size.height);
     path.lineTo(waveCurve.startOfBezier, size.height);
-    path.cubicTo(
+    canvas.drawPath(path, wavePainter);
+
+    final Path wavePath = Path();
+    wavePath.moveTo(waveCurve.startOfBezier, size.height);
+
+    wavePath.cubicTo(
         waveCurve.leftControlPoint1,
         size.height,
         waveCurve.leftControlPoint2,
         waveCurve.controlHeight!,
         waveCurve.centerPoint,
         waveCurve.controlHeight!);
-    path.cubicTo(
+    wavePath.cubicTo(
         waveCurve.rightControlPoint1,
         waveCurve.controlHeight!,
         waveCurve.rightControlPoint2,
         size.height,
         waveCurve.endOfBezier,
         size.height);
-    path.lineTo(size.width, size.height);
 
-    canvas.drawPath(path, wavePainter);
+    wavePainterGradient.shader = const LinearGradient(
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      colors: <Color>[
+        Colors.black,
+        Colors.teal,
+        Colors.black,
+      ],
+    ).createShader(
+      Rect.fromPoints(
+        Offset(waveCurve.startOfBezier, size.height),
+        Offset(waveCurve.endOfBezier, size.height),
+      ),
+    );
+
+    canvas.drawPath(wavePath, wavePainterGradient);
+
+    final Path endPath = Path();
+    endPath.moveTo(waveCurve.endOfBezier, size.height);
+    endPath.lineTo(size.width, size.height);
+    canvas.drawPath(endPath, wavePainter);
   }
 
   WaveCurveDefinitions _calculateWaveLineDefinitions(Size size) {
-    // final double controlHeight =
-    //     (size.height - minWaveHeight!) - (maxWaveHeight * dragPercentage);
+    final double controlHeight = size.height - minWaveHeight! - 5;
 
-    final double controlHeight = size.height - minWaveHeight! - maxWaveHeight;
-
-    final double bendWidth = 20 + 20 * dragPercentage;
-    final double bezierWidth = 20 + 20 * dragPercentage;
+    const double bendWidth = 20 + 20; //* dragPercentage;
+    const double bezierWidth = 20 + 20; // * dragPercentage;
 
     double centerPoint = sliderPosition;
     centerPoint = (centerPoint > size.width) ? size.width : centerPoint;
 
     double startOfBend = centerPoint - bendWidth / 2;
     double startOfBezier = startOfBend - bezierWidth;
-    double endOfBend = sliderPosition + bendWidth / 2;
+    double endOfBend = centerPoint + bendWidth / 2;
     double endOfBezier = endOfBend + bezierWidth;
 
     startOfBend = (startOfBend <= anchorRadius) ? anchorRadius : startOfBend;
@@ -102,30 +127,10 @@ class WavePainter extends CustomPainter {
     endOfBend = (endOfBend > size.width) ? size.width : endOfBend;
     endOfBezier = (endOfBezier > size.width) ? size.width : endOfBezier;
 
-    double leftBendControlPoint1 = startOfBend;
-    double leftBendControlPoint2 = startOfBend;
-    double rightBendControlPoint1 = endOfBend;
-    double rightBendControlPoint2 = endOfBend;
-
-    const double bendability = 25.0;
-    const double maxSlideDifference = 30.0;
-    double slideDifference = (sliderPosition - _previousSliderPosition).abs();
-
-    slideDifference = (slideDifference > maxSlideDifference)
-        ? maxSlideDifference
-        : slideDifference;
-
-    double? bend =
-        lerpDouble(0.0, bendability, slideDifference / maxSlideDifference);
-    final bool moveLeft = sliderPosition < _previousSliderPosition;
-    bend = moveLeft ? -bend! : bend;
-
-    leftBendControlPoint1 = leftBendControlPoint1 + bend!;
-    leftBendControlPoint2 = leftBendControlPoint2 - bend;
-    rightBendControlPoint1 = rightBendControlPoint1 - bend;
-    rightBendControlPoint2 = rightBendControlPoint2 + bend;
-
-    centerPoint = centerPoint - bend;
+    final double leftBendControlPoint1 = startOfBend;
+    final double leftBendControlPoint2 = startOfBend;
+    final double rightBendControlPoint1 = endOfBend;
+    final double rightBendControlPoint2 = endOfBend;
 
     final WaveCurveDefinitions waveCurveDefinitions = WaveCurveDefinitions(
       controlHeight: controlHeight,

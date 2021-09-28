@@ -1,3 +1,4 @@
+import 'package:example/wave_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:wave_slider/wave_slider.dart';
 
@@ -41,7 +42,8 @@ class _AppState extends State<App> {
               '$_dragPercentage',
               style: const TextStyle(fontSize: 16),
             ),
-          )
+          ),
+          const WaveWidget(),
         ],
       ),
     );

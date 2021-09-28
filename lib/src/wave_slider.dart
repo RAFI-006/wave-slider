@@ -80,6 +80,7 @@ class _WaveSliderState extends State<WaveSlider>
       _dragPosition = newDragPosition;
       _dragPercentage = _dragPosition / _sliderWidth;
       _temp = (_dragPercentage - 0.5) * 2;
+      print('temp val : $_temp');
     });
   }
 
@@ -124,19 +125,23 @@ class _WaveSliderState extends State<WaveSlider>
                   Container(
                     width: double.infinity,
                     height: widget.sliderHeight,
-                    child: CustomPaint(
-                      painter: WavePainter(
-                        color: widget.color,
-                        sliderPosition: _dragPosition,
-                        dragPercentage: _dragPercentage,
-                      ),
+                    child: LayoutBuilder(
+                      builder: (context, boxCon) {
+                        return CustomPaint(
+                          painter: WavePainter(
+                            color: widget.color,
+                            sliderPosition: boxCon.maxWidth * _dragPercentage,
+                            dragPercentage: _dragPercentage,
+                          ),
+                        );
+                      },
                     ),
                   ),
                   Align(
                     alignment: Alignment(_temp, 0),
                     child: const CircleAvatar(
                       backgroundColor: Colors.teal,
-                      radius: 20,
+                      radius: 10,
                     ),
                   ),
                 ],
