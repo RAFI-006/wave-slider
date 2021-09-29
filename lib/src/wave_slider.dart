@@ -8,6 +8,7 @@ class WaveSlider extends StatefulWidget {
   const WaveSlider({
     this.color = const Color(0xffe5e8fe),
     this.activeColor = const Color(0xff4863e1),
+    this.handleColor = const Color(0xffffffff),
     this.value = 0.0,
     this.onChangeEnd,
     this.onChangeStart,
@@ -26,6 +27,7 @@ class WaveSlider extends StatefulWidget {
   final List<Color>? waveGradientColorList;
   final double waveStrokeWidth;
   final Color activeColor;
+  final Color handleColor;
 
   final int? divisions;
   final double min;
@@ -200,6 +202,7 @@ class _WaveSliderState extends State<WaveSlider>
                 waveGradientColorList: widget.waveGradientColorList,
                 waveStrokeWidth: widget.waveStrokeWidth,
                 activeColor: widget.activeColor,
+                handleColor: widget.handleColor,
               ),
             ),
           ),

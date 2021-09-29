@@ -8,6 +8,7 @@ class WavePainter extends CustomPainter {
     required this.dragPercentage,
     this.color = Colors.black,
     this.activeColor = Colors.black,
+    this.handleColor = Colors.white,
     this.waveGradientColorList,
     this.waveStrokeWidth = 3.0,
   }) {
@@ -19,6 +20,13 @@ class WavePainter extends CustomPainter {
     trackballPainter = Paint()
       ..color = activeColor
       ..style = PaintingStyle.fill;
+
+    trianglePainter = Paint()
+      ..color = handleColor
+      ..strokeWidth = waveStrokeWidth
+      ..style = PaintingStyle.fill
+      ..strokeJoin = StrokeJoin.round
+      ..strokeCap = StrokeCap.round;
 
     if (waveGradientColorList == null || waveGradientColorList!.isEmpty) {
       waveGradientColorList = const <Color>[
@@ -39,11 +47,13 @@ class WavePainter extends CustomPainter {
 
   final Color color;
   final Color activeColor;
+  final Color handleColor;
   late List<Color>? waveGradientColorList;
 
   late Paint wavePainter;
   late Paint trackballPainter;
   late Paint wavePainterGradient;
+  late Paint trianglePainter;
   final double waveStrokeWidth;
 
   /// Previous slider position initialised at the [anchorRadius], which is the start
@@ -128,11 +138,39 @@ class WavePainter extends CustomPainter {
 
     final double indicatorSize = size.height * 0.6;
 
+    final Offset point = Offset(centerPoint, indicatorSize * 1.5);
+
     canvas.drawCircle(
-      Offset(centerPoint, indicatorSize * 1.5),
+      point,
       indicatorSize,
       trackballPainter,
     );
+
+    final double triangleSideLength = indicatorSize * 0.6;
+
+    /// left triangle
+    final Path leftTriangle = Path();
+    leftTriangle.moveTo(point.dx, point.dy);
+    leftTriangle.relativeMoveTo(
+        triangleSideLength * -0.1, triangleSideLength / -2);
+    leftTriangle.relativeLineTo(0, triangleSideLength);
+    leftTriangle.relativeLineTo(
+        triangleSideLength * -1, triangleSideLength / -2);
+    leftTriangle.relativeLineTo(
+        triangleSideLength * 1, triangleSideLength / -2);
+    canvas.drawPath(leftTriangle, trianglePainter);
+
+    /// right triangle
+    final Path rightTriangle = Path();
+    rightTriangle.moveTo(point.dx, point.dy);
+    rightTriangle.relativeMoveTo(
+        triangleSideLength * 0.1, triangleSideLength / -2);
+    rightTriangle.relativeLineTo(0, triangleSideLength);
+    rightTriangle.relativeLineTo(
+        triangleSideLength * 1, triangleSideLength / -2);
+    rightTriangle.relativeLineTo(
+        triangleSideLength * -1, triangleSideLength / -2);
+    canvas.drawPath(rightTriangle, trianglePainter);
   }
 
   WaveCurveDefinitions _calculateWaveLineDefinitions(Size size) {
