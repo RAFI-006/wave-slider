@@ -24,8 +24,8 @@ class _AppState extends State<App> {
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: Container(
-              width: double.infinity,
-              height: 60,
+              width: 300,
+              height: 48,
               child: WaveSlider(
                 divisions: 5,
                 divisionVal: _selectedDivision,
@@ -48,8 +48,8 @@ class _AppState extends State<App> {
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: Container(
-              width: double.infinity,
-              height: 60,
+              width: 300,
+              height: 48,
               child: WaveSlider(
                 value: _selectedVal,
                 min: 100,

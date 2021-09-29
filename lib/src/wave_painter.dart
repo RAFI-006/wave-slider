@@ -64,20 +64,20 @@ class WavePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Size restrictedSize = Size(size.width - anchorRadius, size.height);
-    _paintAnchors(canvas, restrictedSize);
+    // _paintAnchors(canvas, restrictedSize);
     minWaveHeight = restrictedSize.height * 0.5;
     _paintSlidingWave(canvas, restrictedSize);
   }
 
-  void _paintAnchors(Canvas canvas, Size size) {
-    canvas.drawCircle(
-        Offset(anchorRadius, size.height), anchorRadius, trackballPainter);
-    canvas.drawCircle(
-        Offset(size.width, size.height), anchorRadius, trackballPainter);
-  }
+  // void _paintAnchors(Canvas canvas, Size size) {
+  //   canvas.drawCircle(
+  //       Offset(anchorRadius, size.height), anchorRadius, trackballPainter);
+  //   canvas.drawCircle(
+  //       Offset(size.width, size.height), anchorRadius, trackballPainter);
+  // }
 
   void _paintSlidingWave(Canvas canvas, Size size) {
-    final Size _size = Size(size.width, size.height * 0.5);
+    final Size _size = Size(size.width, size.height * 0.65);
 
     final WaveCurveDefinitions line = _calculateWaveLineDefinitions(_size);
     _paintWaveLine(canvas, _size, line);
@@ -174,8 +174,8 @@ class WavePainter extends CustomPainter {
   WaveCurveDefinitions _calculateWaveLineDefinitions(Size size) {
     final double controlHeight = size.height - size.height;
 
-    const double bendWidth = 20 + 20; //* dragPercentage;
-    const double bezierWidth = 20 + 20; // * dragPercentage;
+    const double bendWidth = 20 + 30; //* dragPercentage;
+    const double bezierWidth = 20 + 30; // * dragPercentage;
 
     double centerPoint = sliderPosition;
     centerPoint = (centerPoint > size.width) ? size.width : centerPoint;
