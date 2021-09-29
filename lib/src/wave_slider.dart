@@ -6,20 +6,30 @@ class WaveSlider extends StatefulWidget {
   ///
   /// When the state of the slider is changed the widget calls the [onChanged] callback.
   const WaveSlider({
-    this.color = Colors.black,
-    this.activeColor = Colors.black,
-    this.initialPosition = 0.5,
+    this.color = const Color(0xffe5e8fe),
+    this.activeColor = const Color(0xff4863e1),
+    this.value = 0.0,
     this.onChangeEnd,
     this.onChangeStart,
-    required this.onChanged,
+    this.onChanged,
+    this.onDivisionChanged,
     this.waveGradientColorList,
     this.waveStrokeWidth = 3.0,
+    this.divisions,
+    this.min = 0.0,
+    this.max = 1.0,
+    this.divisionVal,
   });
 
-  final double initialPosition;
+  final double value;
+  final int? divisionVal;
   final List<Color>? waveGradientColorList;
   final double waveStrokeWidth;
   final Color activeColor;
+
+  final int? divisions;
+  final double min;
+  final double max;
 
   /// The color of the slider can be set by specifying a [color] - default is black.
   final Color color;
@@ -28,13 +38,16 @@ class WaveSlider extends StatefulWidget {
   /// by dragging.
   ///
   /// Returns a percentage value between 0 and 100 for the current drag position.
-  final ValueChanged<double> onChanged;
+  final ValueChanged<double>? onChanged;
 
   /// Called when the user starts selecting a new value for the slider.
   final ValueChanged<double>? onChangeStart;
 
   /// Called when the user is done selecting a new value for the slider.
   final ValueChanged<double>? onChangeEnd;
+
+  /// Called when the user is done selecting a new division .
+  final ValueChanged<int>? onDivisionChanged;
 
   @override
   _WaveSliderState createState() => _WaveSliderState();
@@ -50,22 +63,47 @@ class _WaveSliderState extends State<WaveSlider>
   @override
   void initState() {
     super.initState();
-    _dragPercentage = widget.initialPosition;
+    _dragPercentage = _initialPercentage();
+  }
+
+  double _initialPercentage() {
+    if (widget.divisions != null && widget.divisionVal != null) {
+      if (!(widget.divisionVal! <= widget.divisions!)) {
+        throw Exception(
+            ' initialDivision : ${widget.divisionVal} should not be granter than divisions');
+      }
+      final double singleDivisionWidth = 1 / widget.divisions!;
+      return singleDivisionWidth * widget.divisionVal!;
+    } else {
+      if (!(widget.min <= widget.value && widget.min <= widget.max)) {
+        throw Exception(
+            'value : ${widget.value} not in a range of min and max');
+      }
+
+      final double totalDiff = widget.max - widget.min;
+      final double givenVal = widget.value - widget.min;
+
+      return givenVal / totalDiff;
+    }
   }
 
   void _handleChanged(double val) {
-    widget.onChanged(val);
+    if (widget.onChanged != null) {
+      final double diff = widget.max - widget.min;
+      final double result = (diff * val) + widget.min;
+      widget.onChanged!(result);
+    }
   }
 
   void _handleChangeStart(double val) {
     if (widget.onChangeStart != null) {
       widget.onChangeStart!(val);
     }
-    widget.onChanged(val);
+    _handleChanged(val);
   }
 
   void _handleChangeEnd(double val) {
-    widget.onChanged(val);
+    _handleChanged(val);
     if (widget.onChangeEnd != null) {
       widget.onChangeEnd!(val);
     }
@@ -102,8 +140,46 @@ class _WaveSliderState extends State<WaveSlider>
   }
 
   void _onDragEnd(BuildContext context, DragEndDetails end) {
+    if (widget.divisions != null) {
+      _handleDivisions();
+    }
     setState(() {});
     _handleChangeEnd(_dragPercentage);
+  }
+
+  void _handleDivisions() {
+    final double singleDivisionWidth = 1 / widget.divisions!;
+
+    final List<double> list = List<double>.generate(
+        widget.divisions! + 1, (int i) => singleDivisionWidth * i);
+
+    for (MapEntry<int, double> entry in list.asMap().entries) {
+      if (_dragPercentage <= entry.value) {
+        /// left and right divisions
+        final double rightDivision = list[entry.key];
+        final double leftDivision = entry.key == 0 ? 0.0 : list[entry.key - 1];
+
+        final double rightDiff = rightDivision - _dragPercentage;
+        final double leftDiff = _dragPercentage - leftDivision;
+
+        if (leftDiff < rightDiff) {
+          /// move to left
+          _dragPercentage = leftDivision;
+
+          if (widget.onDivisionChanged != null) {
+            widget
+                .onDivisionChanged!(entry.key == 0 ? entry.key : entry.key - 1);
+          }
+        } else {
+          /// move to right
+          _dragPercentage = rightDivision;
+          if (widget.onDivisionChanged != null) {
+            widget.onDivisionChanged!(entry.key);
+          }
+        }
+        break;
+      }
+    }
   }
 
   @override

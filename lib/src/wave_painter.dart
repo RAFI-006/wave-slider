@@ -21,10 +21,10 @@ class WavePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     if (waveGradientColorList == null || waveGradientColorList!.isEmpty) {
-      waveGradientColorList = <Color>[
-        Colors.black,
-        Colors.teal,
-        Colors.black,
+      waveGradientColorList = const <Color>[
+        Color(0xffe5e8fe),
+        Color(0xff4863e1),
+        Color(0xffe5e8fe),
       ];
     }
 

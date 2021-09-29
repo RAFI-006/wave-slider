@@ -11,7 +11,9 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  double _dragPercentage = 0;
+  int _selectedDivision = 3;
+
+  double _selectedVal = 900;
 
   @override
   Widget build(BuildContext context) {
@@ -25,35 +27,46 @@ class _AppState extends State<App> {
               width: double.infinity,
               height: 60,
               child: WaveSlider(
-                color: const Color(0xffe5e8fe),
-                activeColor: const Color(0xff4863e1),
-                waveGradientColorList: const <Color>[
-                  Color(0xffe5e8fe),
-                  Color(0xff4863e1),
-                  Color(0xffe5e8fe),
-                ],
-                initialPosition: 0.8,
-                onChanged: (double dragUpdate) {
+                divisions: 5,
+                divisionVal: _selectedDivision,
+                onDivisionChanged: (int division) {
                   setState(() {
-                    _dragPercentage = dragUpdate *
-                        100; // dragUpdate is a fractional value between 0 and 1
+                    _selectedDivision = division;
                   });
                 },
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Drag percentage',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              'selected division : $_selectedDivision',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Container(height: 40),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: Container(
+              width: double.infinity,
+              height: 60,
+              child: WaveSlider(
+                value: _selectedVal,
+                min: 100,
+                max: 1000,
+                onChanged: (double val) {
+                  setState(() {
+                    _selectedVal = val;
+                  });
+                },
+              ),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              '$_dragPercentage',
-              style: const TextStyle(fontSize: 16),
+              'Val [ 100-1000 ] : $_selectedVal',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
         ],
