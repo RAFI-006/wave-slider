@@ -6,20 +6,21 @@ class WaveSlider extends StatefulWidget {
   ///
   /// When the state of the slider is changed the widget calls the [onChanged] callback.
   const WaveSlider({
-    this.color = const Color(0xffe5e8fe),
-    this.activeColor = const Color(0xff4863e1),
-    this.handleColor = const Color(0xffffffff),
     this.value = 0.0,
+    this.min = 0.0,
+    this.max = 1.0,
+    this.divisions,
+    this.divisionVal,
     this.onChangeEnd,
     this.onChangeStart,
     this.onChanged,
     this.onDivisionChanged,
+    this.color = const Color(0xffe5e8fe),
+    this.activeColor = const Color(0xff4863e1),
+    this.handleColor = const Color(0xffffffff),
     this.waveGradientColorList,
     this.waveStrokeWidth = 3.0,
-    this.divisions,
-    this.min = 0.0,
-    this.max = 1.0,
-    this.divisionVal,
+    this.sliderPaddingVal = 36,
   });
 
   final double value;
@@ -32,6 +33,7 @@ class WaveSlider extends StatefulWidget {
   final int? divisions;
   final double min;
   final double max;
+  final double sliderPaddingVal;
 
   /// The color of the slider can be set by specifying a [color] - default is black.
   final Color color;
@@ -190,6 +192,14 @@ class _WaveSliderState extends State<WaveSlider>
       builder: (BuildContext context, BoxConstraints constraints) {
         _sliderWidth = constraints.maxWidth;
         _sliderHeight = constraints.maxHeight;
+
+        final double sliderPaddingPercent =
+            widget.sliderPaddingVal / _sliderWidth;
+
+        // convert
+        final double virtualPercentage = sliderPaddingPercent +
+            (_dragPercentage * (1.0 - sliderPaddingPercent * 2));
+
         return GestureDetector(
           child: Container(
             width: _sliderWidth,
@@ -197,8 +207,7 @@ class _WaveSliderState extends State<WaveSlider>
             child: CustomPaint(
               painter: WavePainter(
                 color: widget.color,
-                sliderPosition: _sliderWidth * _dragPercentage,
-                dragPercentage: _dragPercentage,
+                sliderPosition: _sliderWidth * virtualPercentage,
                 waveGradientColorList: widget.waveGradientColorList,
                 waveStrokeWidth: widget.waveStrokeWidth,
                 activeColor: widget.activeColor,

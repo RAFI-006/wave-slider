@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 class WavePainter extends CustomPainter {
   WavePainter({
     required this.sliderPosition,
-    required this.dragPercentage,
     this.color = Colors.black,
     this.activeColor = Colors.black,
     this.handleColor = Colors.white,
@@ -43,7 +42,6 @@ class WavePainter extends CustomPainter {
   }
 
   final double sliderPosition;
-  final double dragPercentage;
 
   final Color color;
   final Color activeColor;
@@ -59,24 +57,24 @@ class WavePainter extends CustomPainter {
   /// Previous slider position initialised at the [anchorRadius], which is the start
   double _previousSliderPosition = anchorRadius;
 
-  static const double anchorRadius = 5;
+  static const double anchorRadius = 0;
 
   double? minWaveHeight;
 
   @override
   void paint(Canvas canvas, Size size) {
     final Size restrictedSize = Size(size.width - anchorRadius, size.height);
-    //_paintAnchors(canvas, restrictedSize);
+    _paintAnchors(canvas, restrictedSize);
     minWaveHeight = restrictedSize.height * 0.5;
     _paintSlidingWave(canvas, restrictedSize);
   }
 
-  // void _paintAnchors(Canvas canvas, Size size) {
-  //   canvas.drawCircle(
-  //       Offset(anchorRadius, size.height), anchorRadius, fillPainter);
-  //   canvas.drawCircle(
-  //       Offset(size.width, size.height), anchorRadius, fillPainter);
-  // }
+  void _paintAnchors(Canvas canvas, Size size) {
+    canvas.drawCircle(
+        Offset(anchorRadius, size.height), anchorRadius, trackballPainter);
+    canvas.drawCircle(
+        Offset(size.width, size.height), anchorRadius, trackballPainter);
+  }
 
   void _paintSlidingWave(Canvas canvas, Size size) {
     final Size _size = Size(size.width, size.height * 0.5);
