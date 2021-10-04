@@ -21,6 +21,7 @@ class WaveSlider extends StatefulWidget {
     this.waveGradientColorList,
     this.waveStrokeWidth = 3.0,
     this.sliderPaddingVal = 36,
+    this.handleImagePath,
   });
 
   final double value;
@@ -34,6 +35,8 @@ class WaveSlider extends StatefulWidget {
   final double min;
   final double max;
   final double sliderPaddingVal;
+
+  final String? handleImagePath;
 
   /// The color of the slider can be set by specifying a [color] - default is black.
   final Color color;
@@ -204,15 +207,38 @@ class _WaveSliderState extends State<WaveSlider>
           child: Container(
             width: _sliderWidth,
             height: _sliderHeight,
-            child: CustomPaint(
-              painter: WavePainter(
-                color: widget.color,
-                sliderPosition: _sliderWidth * virtualPercentage,
-                waveGradientColorList: widget.waveGradientColorList,
-                waveStrokeWidth: widget.waveStrokeWidth,
-                activeColor: widget.activeColor,
-                handleColor: widget.handleColor,
-              ),
+            child: Stack(
+              children: [
+                Container(
+                  width: _sliderWidth,
+                  height: _sliderHeight,
+                  child: CustomPaint(
+                    painter: WavePainter(
+                      color: widget.color,
+                      sliderPosition: _sliderWidth * virtualPercentage,
+                      waveGradientColorList: widget.waveGradientColorList,
+                      waveStrokeWidth: widget.waveStrokeWidth,
+                      activeColor: widget.activeColor,
+                      handleColor: widget.handleColor,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: (_sliderWidth * virtualPercentage) -
+                      (_sliderHeight * 0.4),
+                  bottom: 0,
+                  child: widget.handleImagePath == null
+                      ? CircleAvatar(
+                          backgroundColor: Colors.teal,
+                          radius: _sliderHeight * 0.4,
+                        )
+                      : Image.asset(
+                          widget.handleImagePath!,
+                          width: _sliderHeight * 0.8,
+                          height: _sliderHeight * 0.8,
+                        ),
+                ),
+              ],
             ),
           ),
           onHorizontalDragStart: (DragStartDetails start) =>

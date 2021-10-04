@@ -81,7 +81,7 @@ class WavePainter extends CustomPainter {
 
     final WaveCurveDefinitions line = _calculateWaveLineDefinitions(_size);
     _paintWaveLine(canvas, _size, line);
-    _paintTrackball(canvas, _size, waveCurve: line);
+    //_paintTrackball(canvas, _size, waveCurve: line);
   }
 
   void _paintWaveLine(

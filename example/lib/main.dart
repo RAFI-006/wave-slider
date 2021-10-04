@@ -29,6 +29,7 @@ class _AppState extends State<App> {
               child: WaveSlider(
                 divisions: 5,
                 divisionVal: _selectedDivision,
+                handleImagePath: 'assets/images/slider_handler.png',
                 onDivisionChanged: (int division) {
                   setState(() {
                     _selectedDivision = division;
@@ -54,6 +55,7 @@ class _AppState extends State<App> {
                 value: _selectedVal,
                 min: 100,
                 max: 1000,
+                handleImagePath: 'assets/images/slider_handler.png',
                 onChanged: (double val) {
                   setState(() {
                     _selectedVal = val;
