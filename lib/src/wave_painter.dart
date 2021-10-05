@@ -36,7 +36,6 @@ class WavePainter extends CustomPainter {
     }
 
     wavePainterGradient = Paint()
-      ..color = color
       ..style = PaintingStyle.stroke
       ..strokeWidth = waveStrokeWidth;
   }
