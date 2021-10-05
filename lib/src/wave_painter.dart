@@ -174,8 +174,8 @@ class WavePainter extends CustomPainter {
   WaveCurveDefinitions _calculateWaveLineDefinitions(Size size) {
     final double controlHeight = size.height - size.height;
 
-    const double bendWidth = 20 + 30; //* dragPercentage;
-    const double bezierWidth = 20 + 30; // * dragPercentage;
+    final double bendWidth = size.height * 1.6; //* dragPercentage;
+    final double bezierWidth = size.height * 0.8; // * dragPercentage;
 
     double centerPoint = sliderPosition;
     centerPoint = (centerPoint > size.width) ? size.width : centerPoint;
