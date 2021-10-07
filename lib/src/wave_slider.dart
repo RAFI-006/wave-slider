@@ -136,6 +136,9 @@ class _WaveSliderState extends State<WaveSlider>
     final RenderBox box = context.findRenderObject() as RenderBox;
     final Offset localOffset = box.globalToLocal(start.globalPosition);
     _updateDragPosition(localOffset);
+    if (widget.divisions != null) {
+      _handleDivisions();
+    }
     _handleChangeStart(_dragPercentage);
   }
 
@@ -143,6 +146,9 @@ class _WaveSliderState extends State<WaveSlider>
     final RenderBox box = context.findRenderObject() as RenderBox;
     final Offset localOffset = box.globalToLocal(update.globalPosition);
     _updateDragPosition(localOffset);
+    if (widget.divisions != null) {
+      _handleDivisions();
+    }
     _handleChanged(_dragPercentage);
   }
 

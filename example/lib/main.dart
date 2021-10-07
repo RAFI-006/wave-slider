@@ -15,6 +15,16 @@ class _AppState extends State<App> {
 
   double _selectedVal = 900;
 
+  /*
+
+  10,000
+
+  5,00,000
+
+  4,90
+
+   */
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +37,7 @@ class _AppState extends State<App> {
               width: 300,
               height: 48,
               child: WaveSlider(
-                divisions: 5,
+                divisions: 490 - 1,
                 divisionVal: _selectedDivision,
                 handleImagePath: 'assets/images/slider_handler.png',
                 onDivisionChanged: (int division) {
@@ -55,6 +65,7 @@ class _AppState extends State<App> {
                 value: _selectedVal,
                 min: 100,
                 max: 1000,
+                color: Colors.white.withOpacity(0.3),
                 handleImagePath: 'assets/images/slider_handler.png',
                 onChanged: (double val) {
                   setState(() {
