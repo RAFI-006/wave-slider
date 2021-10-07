@@ -6,6 +6,7 @@ class WaveSlider extends StatefulWidget {
   ///
   /// When the state of the slider is changed the widget calls the [onChanged] callback.
   const WaveSlider({
+    Key? key,
     this.value = 0.0,
     this.min = 0.0,
     this.max = 1.0,
@@ -22,7 +23,7 @@ class WaveSlider extends StatefulWidget {
     this.waveStrokeWidth = 3.0,
     this.sliderPaddingVal = 36,
     this.handleImagePath,
-  });
+  }) : super(key: key);
 
   final double value;
   final int? divisionVal;
