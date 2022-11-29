@@ -29,7 +29,7 @@ class WavePainter extends CustomPainter {
 
     if (waveGradientColorList == null || waveGradientColorList!.isEmpty) {
       waveGradientColorList = const <Color>[
-        Color(0xffe5e8fe),
+        Color(0xff7E75E4),
         Color(0xff4863e1),
         Color(0xffe5e8fe),
       ];
