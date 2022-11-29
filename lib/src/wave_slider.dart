@@ -16,7 +16,7 @@ class WaveSlider extends StatefulWidget {
     this.onChangeStart,
     this.onChanged,
     this.onDivisionChanged,
-    this.color = const Color(0xffe5e8fe),
+    this.color = const Color(0xff7E75E4),
     this.activeColor = const Color(0xff4863e1),
     this.handleColor = const Color(0xffffffff),
     this.waveGradientColorList,
